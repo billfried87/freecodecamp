@@ -1,0 +1,50 @@
+#!/bin/bash
+PSQL="psql -X --username=freecodecamp --dbname=periodic_table --no-align --tuples-only -c"
+
+if [[ -z $1 ]]
+then
+  echo "Please provide an element as an argument."
+elif [[ "$1" =~ ^[0-9]+$ ]]
+then
+  ATOMIC_NUMBER_ENTRY=$($PSQL "SELECT atomic_number FROM elements WHERE atomic_number ='$1'")
+else
+  ELEMENT_NAME_ENTRY=$($PSQL "SELECT name FROM elements WHERE name='$1'")
+  ELEMENT_SYMBOL_ENTRY=$($PSQL "SELECT symbol FROM elements WHERE symbol='$1'")
+fi
+
+if [[ -n $1 ]]
+then
+if [[ -n $ATOMIC_NUMBER_ENTRY ]]
+then 
+  ATOMIC_NUMBER=$($PSQL "SELECT atomic_number FROM elements WHERE atomic_number='$1'")
+  ATOMIC_SYMBOL=$($PSQL "SELECT symbol FROM elements WHERE atomic_number='$ATOMIC_NUMBER'")
+  ATOMIC_NAME=$($PSQL "SELECT name FROM elements WHERE atomic_number='$ATOMIC_NUMBER'")
+  ATOMIC_MASS=$($PSQL "SELECT atomic_mass FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  MELTING_POINT=$($PSQL "SELECT melting_point_celsius FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  BOILING_POINT=$($PSQL "SELECT boiling_point_celsius FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  ELEMENT_TYPE=$($PSQL "SELECT type FROM properties INNER JOIN types ON properties.type_id = types.type_id WHERE atomic_number='$ATOMIC_NUMBER'")
+  echo "The element with atomic number $ATOMIC_NUMBER is $ATOMIC_NAME ($ATOMIC_SYMBOL). It's a $ELEMENT_TYPE, with a mass of $ATOMIC_MASS amu. $ATOMIC_NAME has a melting point of $MELTING_POINT celsius and a boiling point of $BOILING_POINT celsius."
+elif [[ -n $ELEMENT_NAME_ENTRY ]]
+then
+  ATOMIC_NUMBER=$($PSQL "SELECT atomic_number FROM elements WHERE name='$1'")
+  ATOMIC_SYMBOL=$($PSQL "SELECT symbol FROM elements WHERE atomic_number='$ATOMIC_NUMBER'")
+  ATOMIC_NAME=$($PSQL "SELECT name FROM elements WHERE atomic_number='$ATOMIC_NUMBER'")
+  ATOMIC_MASS=$($PSQL "SELECT atomic_mass FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  MELTING_POINT=$($PSQL "SELECT melting_point_celsius FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  BOILING_POINT=$($PSQL "SELECT boiling_point_celsius FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  ELEMENT_TYPE=$($PSQL "SELECT type FROM properties INNER JOIN types ON properties.type_id = types.type_id WHERE atomic_number='$ATOMIC_NUMBER'")
+  echo "The element with atomic number $ATOMIC_NUMBER is $ATOMIC_NAME ($ATOMIC_SYMBOL). It's a $ELEMENT_TYPE, with a mass of $ATOMIC_MASS amu. $ATOMIC_NAME has a melting point of $MELTING_POINT celsius and a boiling point of $BOILING_POINT celsius."
+elif [[ -n $ELEMENT_SYMBOL_ENTRY ]]
+then
+  ATOMIC_NUMBER=$($PSQL "SELECT atomic_number FROM elements WHERE symbol='$1'")
+  ATOMIC_SYMBOL=$($PSQL "SELECT symbol FROM elements WHERE atomic_number='$ATOMIC_NUMBER'")
+  ATOMIC_NAME=$($PSQL "SELECT name FROM elements WHERE atomic_number='$ATOMIC_NUMBER'")
+  ATOMIC_MASS=$($PSQL "SELECT atomic_mass FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  MELTING_POINT=$($PSQL "SELECT melting_point_celsius FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  BOILING_POINT=$($PSQL "SELECT boiling_point_celsius FROM properties WHERE atomic_number='$ATOMIC_NUMBER'")
+  ELEMENT_TYPE=$($PSQL "SELECT type FROM properties INNER JOIN types ON properties.type_id = types.type_id WHERE atomic_number='$ATOMIC_NUMBER'")
+  echo "The element with atomic number $ATOMIC_NUMBER is $ATOMIC_NAME ($ATOMIC_SYMBOL). It's a $ELEMENT_TYPE, with a mass of $ATOMIC_MASS amu. $ATOMIC_NAME has a melting point of $MELTING_POINT celsius and a boiling point of $BOILING_POINT celsius."
+else 
+echo "I could not find that element in the database."
+fi
+fi
